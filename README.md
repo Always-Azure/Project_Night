@@ -5,14 +5,14 @@
 shuala shuala
 ```
 ## Term
->+ 2018.02.03~ (~ing)
++ 2018.02.03~ (~ing)
 
 ## Member
->+ Park Sangjoon
->+ Park Yehun
++ Park Sangjoon
++ Park Yehun
 
 ## Tool
->+ Unity
++ Unity
 
 ## Update
 >+ __2018.02.07__
