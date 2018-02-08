@@ -8,7 +8,7 @@ shuala shuala
 + 2018.02.03~ (~ing)
 
 ## Member
-+ Park Sangjoon
++ Park Sangjun
 + Park Yehun
 
 ## Tool
