@@ -32,3 +32,7 @@ Move player to safe house. During the way, there are some monster that approach 
 >    > Create Object(TreasureBox, Battery, Potion)
 >    > Object Random Initiate
 >    ```
+>+ __2018.02.28__
+>    ```
+>    > Upload Modeling Objects
+>    ```
