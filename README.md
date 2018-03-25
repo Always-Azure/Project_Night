@@ -2,7 +2,9 @@
 
 ## Outline
 ```
-Move player to safe house. During the way, there are some monster that approach to player for attack. Player can use lantern to protect. If you find treasurebox, you can get some item that help you.
+Move player to safe house. During the way, there are some monster that approach to player for attack. 
+Player can use lantern to protect. 
+If you find treasurebox, you can get some item that help you.
 ```
 ## Term
 + 2018.02.03~ (~ing)
