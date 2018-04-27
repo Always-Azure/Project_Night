@@ -38,3 +38,9 @@ If you find treasurebox, you can get some item that help you.
 >    ```
 >    > Upload Modeling Objects
 >    ```
+>+ __2018.03.06__
+>    ```
+>    > Make the Lanter Trigger
+>    > Make the Light Attack to Monster
+>    > Linking UI with Lantern and Player
+>    ```
