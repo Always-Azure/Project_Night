@@ -1,0 +1,31 @@
+﻿--------------------------------------------------------------
+[] Directory
+"" File
+--------------------------------------------------------------
+[Sounds]
+ - [Backgrounds]
+   - "Background_Intro"
+   - "Background_Playing"
+   - "Background_Success"
+   - "Background_Fail"
+ 
+ - [Items]
+   - "PutDown"
+ 
+ - [Monster]
+   - [Rabbit]
+     - "Attacked"
+	 - "Death"
+ 
+ - [Objects]
+   - [Lantern]
+     - "Switch_On"
+ - [StreetLight]
+     - "StreetLight_On"
+   - [TreasureBox]
+     - "Box_Close"
+	 - "Box_Open"
+ 
+ - [Player]
+   - "Attacked"
+   --------------------------------------------------------------
