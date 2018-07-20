@@ -17,23 +17,23 @@ Move player to safe house. During the way, there are some monster that approach 
 + Blender
 ---
 ## Update Note
->+ __2018.02.07__
+>+ ## __2018.02.07__
 >    ```
 >    > Create Team repository
 >    ```
->+ __2018.02.13__
+>+ ## __2018.02.13__
 >    ```
 >    > Create Terrain Map(Tree, Ground, Sky etc)
 >    > Create Object(House, Lantern)
 >    > Create Basic UI
 >    ```
->+ __2018.02.20__
+>+ ## __2018.02.20__
 >    ```
 >    > Create Inventory Trigger
 >    > Make Objects(TreasureBox, Battery, Potion)
 >    > Object Random Initiate
 >    ```
->+ __2018.02.27__
+>+ ## __2018.02.27__
 >   ```
 >   > [ Player patch ]
 >    + Player Weapon(Lantern Light) patch
@@ -52,7 +52,7 @@ Move player to safe house. During the way, there are some monster that approach 
 >   > [ Scene patch ]
 >    + Make Scene - Intro, Clear, GameOver.
 >   ```
->+ __2018.03.06__
+>+ ## __2018.03.06__
 >   ```
 >   > [ Scene patch ]
 >    + Syschronize each scenes - Intro -> Main -> Clear or GameOver
@@ -61,19 +61,19 @@ Move player to safe house. During the way, there are some monster that approach 
 >    + Apply environment effect
 >       - Decline player HP periodically because of body temperature. It is very cold in night forest.
 >   ```
->+ __2018.03.20__
+>+ ## __2018.03.20__
 >   ```
 >   > [ Monster Patch ]
 >    + Add Unity Navmesh for tracking down player
 >   ```
->+ __2018.04.03__
+>+ ## __2018.04.03__
 >   ```
 >   > [ Object Patch ]
 >    + Add Object - StreetLight
 >    + Include Trigger(StreetLight)
 >       - Switch On/Off
 >   ```
->+ __2018.05.15__
+>+ ## __2018.05.15__
 >   ```
 >   > [ Player Patch ]
 >    + Modify Script
@@ -84,18 +84,18 @@ Move player to safe house. During the way, there are some monster that approach 
 >       - Attack judgment
 >       - Monster respawn
 >   ```
->+ __2018.06.05__
+>+ ## __2018.06.05__
 >   ```
 >   > [ Object Patch ]
 >    + StreetLight - Add Flickering
 >       - According to battery amount, the light will flicker.
 >   ```
->+ __2018.06.12__
+>+ ## __2018.06.12__
 >   ```
 >   > [ UI Patch ]
 >    + Apply animation, highlight etc.
 >   ```
->+ __2018.06.26__
+>+ ## __2018.06.26__
 >   ```
 >   > [ Object Patch ]
 >    < TreasureBox >
@@ -108,7 +108,7 @@ Move player to safe house. During the way, there are some monster that approach 
 >   > [ System Patch ]
 >     + Apply Inventory system (main inventory, treasurebox, lantern)
 >   ```
->+ __2018.07.03__
+>+ ## __2018.07.03__
 >   > __[ Object Patch ]__
 >   ```
 >   < TreasureBox >
@@ -121,7 +121,7 @@ Move player to safe house. During the way, there are some monster that approach 
 >    + Synchronize with treasurebox object in real time
 >    + Synchronize with lantern object in real time
 >   ```
->+ __2018.07.10__
+>+ ## __2018.07.10__
 >   > __[ System Patch ]__
 >    ```
 >    < Common >

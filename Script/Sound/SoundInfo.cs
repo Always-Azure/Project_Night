@@ -109,4 +109,19 @@ public class SoundInfo {
 
         return temp;
     }
+
+    // 해당 Soundlist를 기존 Soundlist에 추가.
+    // 반환값이 있는 이유는, 많이 사용되는 strcat함수도 destination 값을 반환하기 때문에 해놨다. 없는거 보단, 있는게 혹시 모를 상황을 대비하는 거라서 일듯????
+    public Dictionary<string, Sound> ConcatenateSoundList(Dictionary<string, Sound> destination, AudioSource audiosource)
+    {
+        Dictionary<string, Sound> temp = new Dictionary<string, Sound>(_soundList);
+
+        foreach (KeyValuePair<string, Sound> value in temp)
+        {
+            value.Value.AudioSource = audiosource;
+            destination.Add(value.Key, value.Value);
+        }
+
+        return destination;
+    }
 }
