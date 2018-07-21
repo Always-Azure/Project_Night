@@ -11,10 +11,14 @@ public class PlayerManager : MonoBehaviour {
     private GameManager _gameManager;   // GameManager
     private NewInventory _newInven; // Inventory
     private STATE_PLAYER _state;    // Player Condition
+    private PlayerState _playerState;   // Player State
     private float _playerMaxHp = 100.0f;
     private float _playerCurrentHp;
     private float _degree = 1f;
-    private AudioSource _audio; // AudioPlayer
+    
+    private AudioSource _audioMovement; // Movement Sound
+    private AudioSource _audioEffectInner; // Effect Sound by myself
+    private AudioSource _audioEffectOutter; // Effect Sound by others
     private Dictionary<string, Sound> _soundlist; // Sound List
 
     private Lantern _lantern;   // Lantern
@@ -61,11 +65,15 @@ public class PlayerManager : MonoBehaviour {
         _lantern = transform.Find("Lantern").GetComponent<Lantern>();
         _uiHp = GameObject.Find("UIManager").GetComponent<UIHp>();
         _gameManager = GameManager.instance;
+        _playerState = new PlayerState();
         _newInven = GameObject.Find("InventorySystem").GetComponent<NewInventory>();
-        _audio = gameObject.AddComponent<AudioSource>();
-
-        // soundlist 초기화
-        _soundlist = AudioManager.instance.SoundInfo.GetSubDir("Player").GetSoundList(_audio);
+        
+        // Audio
+        _audioMovement = gameObject.AddComponent<AudioSource>();
+        _audioMovement.loop = true;
+        _audioEffectInner = gameObject.AddComponent<AudioSource>();
+        _audioEffectOutter = gameObject.AddComponent<AudioSource>();
+        _soundlist = AudioManager.instance.SoundInfo.GetSubDir("Player").GetSoundList();
     }
 
     public void TakeDamage(float dmg)
@@ -83,6 +91,7 @@ public class PlayerManager : MonoBehaviour {
             _uiHp.SetHpValue(_playerCurrentHp);
 
             // Sound
+            // 환경으로 인해 피해 입는 소리랑, 몬스터한테 맞는 소리랑 같기에 게임 플레이하면서 소리가 너무 시끄럽다. 그래서 주석처리해둠.
             //_soundlist["Attacked"].Play();
             
             if (_playerCurrentHp <= 0.0f)
@@ -111,7 +120,7 @@ public class PlayerManager : MonoBehaviour {
     }
 
     // Controll The Player Action.
-    void PlayerAction()
+    private void PlayerAction()
     {
         // Click Left Mouse Button
         if (Input.GetMouseButtonDown(0))
@@ -127,6 +136,39 @@ public class PlayerManager : MonoBehaviour {
             Debug.Log("왼쪽 마우스 off");
 
             _lantern.OnLight(false);
+        }
+
+        // Player Jump
+        if (Input.GetButtonDown("Jump"))
+        {
+            _playerState.Jump();
+            _soundlist["Jump"].Play(_audioEffectInner);
+
+            _audioMovement.Stop();
+        }
+
+        // [ Player Movement ]
+        if (Input.GetButton("Vertical") || Input.GetButton("Horizontal"))
+        {
+            // 조건문에서 GetButtonDown을 써주고 싶지만, 앞으로만 가는 상황에서 jump했다가 땅에 착지하면 해당 조건문은 실행이 되지 않기에, GetButton으로 했다.
+            if (_playerState.IsStanding == true)
+            {
+                // IsStanding == true로 확인할 수 있지만, 움직이려고 하는 것이기 때문에, Walking == false로 확인해줌.
+                if (_playerState.IsWalking == false && _playerState.IsJump == false)
+                {
+                    _playerState.Walking();
+                    _soundlist["Walk"].Play(_audioMovement);
+                }
+            }
+        }
+        // 멈췄을 때 코드.
+        else if(Input.GetButton("Vertical") == false && Input.GetButton("Horizontal") == false)
+        {
+            if(_playerState.IsStanding == false)
+            {
+                _playerState.Standing();
+                _audioMovement.Stop();
+            }
         }
     }
 
@@ -154,6 +196,18 @@ public class PlayerManager : MonoBehaviour {
         if (hit.gameObject.tag == "Wall")
         {
             Debug.Log("Wall Collision");
+        }
+
+        if(hit.gameObject.tag == "Ground")
+        {
+            if(_playerState.OnGround == false)
+            {
+                if(_playerState.IsJump == true)
+                {
+                    _playerState.LandGround();
+                    _soundlist["Land"].Play(_audioEffectInner);
+                }
+            }
         }
     }
 

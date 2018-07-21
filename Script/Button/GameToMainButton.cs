@@ -4,19 +4,18 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 
-public class GameToMainButton : MonoBehaviour, IPointerEnterHandler {
+public class GameToMainButton : MonoBehaviour, IPointerEnterHandler, IPointerDownHandler {
 
     private Animator anim;
+    private AudioSource _audio;
 
-	// Use this for initialization
-	void Start () {
+    public AudioClip[] _soundlist;
+
+    // Use this for initialization
+    void Start () {
         anim = GetComponent<Animator>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+        _audio = gameObject.AddComponent<AudioSource>();
+    }
 
     public void GoMain()
     {
@@ -26,5 +25,13 @@ public class GameToMainButton : MonoBehaviour, IPointerEnterHandler {
     public void OnPointerEnter(PointerEventData eventData)
     {
         anim.SetTrigger("Is_Highlight");
+        _audio.clip = _soundlist[1];
+        _audio.Play();
+    }
+
+    public void OnPointerDown(PointerEventData eventData)
+    {
+        _audio.clip = _soundlist[0];
+        _audio.Play();
     }
 }
