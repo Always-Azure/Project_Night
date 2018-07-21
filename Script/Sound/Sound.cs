@@ -20,6 +20,16 @@ public class Sound : IDisposable{
     private float _volume; // 소리 크기
     private float _pitch; // 소리 높낮이
 
+    public Sound(string name, string path)
+    {
+        AudioClip clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+        _clip = clip;
+        _audioSource = null;
+        _name = name;
+        _path = path;
+        _volume = 1.0f;
+        _pitch = 0.0f;
+    }
     public Sound(AudioSource audioSource, string name, string path)
     {
         AudioClip clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
@@ -47,6 +57,23 @@ public class Sound : IDisposable{
 
         _audioSource.clip = _clip;
         _audioSource.Play();
+    }
+    public void Play(AudioSource audioSource)
+    {
+        if(audioSource == null)
+        {
+            Debug.LogWarning("AudioSoure 정보가 없습니다.");
+            return;
+        }
+
+        if (_clip == null)
+        {
+            Debug.LogWarning("사운드 파일이 없습니다.");
+            return;
+        }
+
+        audioSource.clip = _clip;
+        audioSource.Play();
     }
 
     // 리소스 해제

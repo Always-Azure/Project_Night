@@ -9,6 +9,9 @@ public class GameExitButton : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
     private Dictionary<string, Sprite> _cash_image;
     private Image _Image;
+    private AudioSource _audio;
+
+    public AudioClip[] _soundlist;
 
 	// Use this for initialization
 	void Start () {
@@ -16,6 +19,7 @@ public class GameExitButton : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 
         _cash_image = new Dictionary<string, Sprite>();
         _Image = GetComponent<Image>();
+        _audio = gameObject.AddComponent<AudioSource>();
 
         temp = Resources.LoadAll<Sprite>("Image/Button");
 
@@ -38,6 +42,9 @@ public class GameExitButton : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public void OnPointerEnter(PointerEventData eventData)
     {
         _Image.sprite = _cash_image["exit_btn_highlighted_white"];
+
+        _audio.clip = _soundlist[1];
+        _audio.Play();
     }
 
     public void OnPointerExit(PointerEventData eventData)
@@ -48,5 +55,10 @@ public class GameExitButton : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public void OnPointerDown(PointerEventData eventData)
     {
         _Image.sprite = _cash_image["exit_btn_clicked_white"];
+
+        _audio.clip = _soundlist[0];
+        _audio.Play();
+        
+       // Application.Quit();
     }
 }

@@ -98,15 +98,17 @@ public class SoundInfo {
         return _soundList[name];
     }
     // sound list 반환
-    public Dictionary<string, Sound> GetSoundList(AudioSource audioSource)
+    public Dictionary<string, Sound> GetSoundList(AudioSource audioSource = null)
     {
         Dictionary<string, Sound> temp = new Dictionary<string, Sound>(_soundList);
 
-        foreach(Sound sound in temp.Values)
+        if(audioSource != null)
         {
-            sound.AudioSource = audioSource;
+            foreach (Sound sound in temp.Values)
+            {
+                sound.AudioSource = audioSource;
+            }
         }
-
         return temp;
     }
 
