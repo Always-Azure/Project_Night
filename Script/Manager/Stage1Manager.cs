@@ -30,7 +30,7 @@ public class Stage1Manager : MonoBehaviour {
             if (_gameManager.GetPlayerState() == STATE_PLAYER.SAFETY)
                 return;
 
-            //_gameManager.CreateMonster("Rabbit", _monsterLimit);
+            _gameManager.CreateMonster("Rabbit", _monsterLimit);
             _timer = 0;
         }
 

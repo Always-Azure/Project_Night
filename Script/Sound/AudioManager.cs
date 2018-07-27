@@ -19,7 +19,7 @@ public class AudioManager : MonoBehaviour {
         LoadSound(rootPath, _soundinfo);
 
         _background = gameObject.AddComponent<AudioSource>();
-
+        _background.loop = true;
         SoundPlayBackground("Background_Playing");
     }
 
