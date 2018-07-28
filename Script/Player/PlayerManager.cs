@@ -78,14 +78,11 @@ public class PlayerManager : MonoBehaviour {
 
     public void TakeDamage(float dmg)
     {
-        float _timer;
-
         if(_state == STATE_PLAYER.ALIVE)
         {
             if (_gameManager == null)
                 _gameManager = GameManager.instance;
 
-            _timer = 0f;
             _playerCurrentHp -= dmg;
 
             _uiHp.SetHpValue(_playerCurrentHp);
@@ -179,7 +176,7 @@ public class PlayerManager : MonoBehaviour {
         _state = STATE_PLAYER.DEAD;
         Debug.Log("PlayerDead");
 
-        // SceneManager.LoadScene("GameOverScene");
+        SceneManager.LoadScene("GameOverScene");
 
     }
 

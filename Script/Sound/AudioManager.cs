@@ -1,7 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 
 public class AudioManager : MonoBehaviour {
 
@@ -14,13 +13,16 @@ public class AudioManager : MonoBehaviour {
     private void Awake()
     {
         instance = this;
-        string rootPath = "Assets/Sounds";
+        string rootPath = "Assets/Resources/Sounds";
         _soundinfo = new SoundInfo("Sounds", rootPath);
         LoadSound(rootPath, _soundinfo);
 
         _background = gameObject.AddComponent<AudioSource>();
         _background.loop = true;
         SoundPlayBackground("Background_Playing");
+
+        AudioClip asdf = Resources.Load<AudioClip>("Sounds/Backgrounds/Background_Fail");
+        AudioClip qwer = asdf;
     }
 
     private void Start()
@@ -48,9 +50,10 @@ public class AudioManager : MonoBehaviour {
                 continue;
 
             string name = file.Name.Split('.')[0];
-            string path = rootPath + "/" + file.Name;
+            string path = rootPath + "/" + name;
+            string folderPath = path.Substring(17);
             
-            Sound temp = new Sound(gameObject.GetComponent<AudioSource>(), name, path);
+            Sound temp = new Sound(name, folderPath);
             soundInfo.AddSound(name, temp);
         }
     }

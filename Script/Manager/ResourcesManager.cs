@@ -7,10 +7,14 @@ public class ResourcesManager : MonoBehaviour {
 
     private Dictionary<string, GameObject> _cash;
 
-	// Use this for initialization
-	void Start () {
+    private void Awake()
+    {
         _cash = new Dictionary<string, GameObject>();
         LoadPrefabs();
+    }
+
+    // Use this for initialization
+    void Start () {
 	}
 
     private void LoadPrefabs()

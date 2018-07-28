@@ -18,7 +18,7 @@ public class Item
 
     public enum ItemType //finding item type
     {
-        Battery, Consumable, Potion
+        Battery, Consumable, Potion, Hint
     }
 
     public Item(string name, int id, string desc, ItemType type, float size)

@@ -89,6 +89,8 @@ public class NewInventory : MonoBehaviour
         AddItem_Inventory(1);
         AddItem_Inventory(1);
         AddItem_Equip(0);
+        AddItem_Inventory(2);
+
         //AddItem_Equip(1);
         //AddItem_TreasureBox(1);
         //AddItem_TreasureBox(1);

@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerCollisionCheck : MonoBehaviour {
-
-    public Inventory inventory;
-
+    
 	// Use this for initialization
 	void Start () {
 		
@@ -31,7 +29,6 @@ public class PlayerCollisionCheck : MonoBehaviour {
             Debug.Log("Near Posion");
             if (Input.GetKeyDown(KeyCode.F)) 
             {
-                inventory.AddItem(2);
             }
         }
 
@@ -48,7 +45,6 @@ public class PlayerCollisionCheck : MonoBehaviour {
             if (Input.GetKeyDown(KeyCode.F))
             {
                 Debug.Log("Get Posion");
-                inventory.AddItem(2);
             }
         }
 
