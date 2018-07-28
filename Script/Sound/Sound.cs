@@ -1,6 +1,5 @@
 ﻿using UnityEngine.Audio;
 using UnityEngine;
-using UnityEditor;
 using System;
 
 public class Sound : IDisposable{
@@ -16,13 +15,14 @@ public class Sound : IDisposable{
     private AudioClip _clip;    // 음원 파일
     private AudioSource _audioSource; // 실행되는 위치
     private string _name;   // 음원 이름
-    private string _path;   // 음원 경로.
+    private string _path;   // 음원 경로. Root = Asset
     private float _volume; // 소리 크기
     private float _pitch; // 소리 높낮이
 
     public Sound(string name, string path)
     {
-        AudioClip clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+        //AudioClip clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+        AudioClip clip = Resources.Load<AudioClip>(path);
         _clip = clip;
         _audioSource = null;
         _name = name;
@@ -32,7 +32,7 @@ public class Sound : IDisposable{
     }
     public Sound(AudioSource audioSource, string name, string path)
     {
-        AudioClip clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+        AudioClip clip = Resources.Load<AudioClip>(path);
         _clip = clip;
         _audioSource = audioSource;
         _name = name;

@@ -283,6 +283,15 @@ public class Slot : MonoBehaviour, IDropHandler, IPointerClickHandler
                 }
             }
 
+            else if (BeforLocation == "Inventory" && test.item.itemType == Item.ItemType.Hint)
+            {
+                NextStageTrigger HintUse = GameObject.Find("House(Clone)").GetComponent<NextStageTrigger>();
+                HintUse.UseHint();
+                BeforListItems[test.slot] = new Item();
+                Destroy(this.transform.GetChild(0).gameObject);
+
+            }
+
             else if (BeforLocation == "Equip" && test.item.itemType == Item.ItemType.Battery)
             {
                 string AfterLocation = "Inventory";

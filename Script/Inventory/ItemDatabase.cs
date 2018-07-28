@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//JOSN 사용시 https://www.youtube.com/watch?v=x24t4DCxGh8 참고
-
 public class ItemDatabase : MonoBehaviour
 {
     public static ItemDatabase instance;

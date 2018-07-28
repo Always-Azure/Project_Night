@@ -17,10 +17,15 @@ public class Stage1Manager : MonoBehaviour {
     private float _timer;
     private int _monsterLimit;
 
+    private void Awake()
+    {
+        init();
+    }
+
     // Use this for initialization
     void Start()
     {
-        init();
+        
     }
 
     private void Update()
