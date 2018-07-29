@@ -5,6 +5,7 @@
 + _(언더바)는 사용하지 말 것.
 
 ## [Asset]
++ "Animations", "Prefabs", "Resources", "Scene", "Script" 등으로 리소스 관리.
 + Texture 및 Merarial 은 모델링 명과 동일하게 할 것.
 + UV mapping 데이터는 이름_UV라고 할 것.
 
@@ -86,8 +87,7 @@
    - 클래스 이름은 반드시 대문자로 시작해야한다.
    - 클래스 내 변수 및 함수들은 접근 지정자를 반드시 작성해야한다. ex) public, protected, private
    - 접근 지정자 순서는 public, protected, private 이다.
-   - 멤버 변수는 앞에 m을 붙일 것.
-   - getter, setter 함수는 class영역 마지막에 작성할 것.
+   - getter, setter 함수는 Property(속성)으로 작성할 것.
    - 멤버 함수는 선언 된 순서대로 작성할 것.
    - 멤버 변수는 접근자끼리 작성해두고 다른 접근자는 newline으로 구분할 것
     ````c
@@ -115,17 +115,17 @@
  + 인터페이스 앞에는 I를 붙일 것.
 
  + **<주석>**
-   - /* */문을 사용한다.
+   - 함수 설명 주석에는 ///문을 사용한다.
     ````c
     ex)
-    /*
-    <summary>
-    함수에 대한 설명
-    <params>
-    인수에 대한 설명
-    <return>
-    반환값에 대한 설명
-    */
+    
+    /// <summary>
+    /// 함수에 대한 설명
+    /// <params>
+    /// 인수에 대한 설명
+    /// <return>
+    /// 반환값에 대한 설명
+    
     void asdf(int a, char b) {...
     ````
    - 변수 선언부의 주석은 ; 뒤에 주석을 붙인다. (//+" "+내용)
