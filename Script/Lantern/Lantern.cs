@@ -2,26 +2,31 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Handle general lantern process
+/// </summary>
+/// <author> YeHun </author>
 public class Lantern : MonoBehaviour {
 
-    public Transform tr; // Player model에서 전등이 위치할 bone 위치 정보를 저장하는 곳.
+    // Property
     public STATE_LIGHT State { get { return _state; } } // return state of lantern
     public STATE_BATTERY StateBattery { get { return _stateBattery; } } // return state of battery
 
-    private STATE_LIGHT _state;
-    private STATE_BATTERY _stateBattery;
-    private GameObject _light;
-    private AudioSource _audio;
-    private Dictionary<string, Sound> _soundlist;
+    public Transform tr; // Player model에서 전등이 위치할 bone 위치 정보를 저장하는 곳.
+
+    private STATE_LIGHT _state; // 랜턴 상태
+    private GameObject _light;  // 랜턴 빛
+    private AudioSource _audio; // 사운드
+    private Dictionary<string, Sound> _soundlist;   // 사운드 리스트
 
     // battery
-    private NewInventory _inventory;
-    private float _batteryConsume;
-    private float _batteryAmount;
-    private float _batteryMax;
+    private STATE_BATTERY _stateBattery;    //배터리 상태
+    private NewInventory _inventory;    // 인벤토리 참조
+    private float _batteryAmount;   // 현재 배터리 량
+    private float _batteryMax;  // 최대 배터리 량
 
     // UI
-    private UIBattery _uiBattery;
+    private UIBattery _uiBattery;   // 배터리 UI 참조
 
     // Init inner values
     private void Awake()
@@ -40,10 +45,10 @@ public class Lantern : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        // 랜턴 위치 관련
-        UpdateLocation();
-        UpdateBattery();
+        UpdateLocation();   // 랜턴 위치 Update
+        UpdateBattery();    // 배터리량 Update from Inventory(Equip)
 
+        // Check the lantern is using now
         if (_state == STATE_LIGHT.ON)
         {
             // check battery is empty
@@ -57,7 +62,10 @@ public class Lantern : MonoBehaviour {
         }
     }
 
-    // Set latern state.
+    /// <summary>
+    /// Set latern state
+    /// </summary>
+    /// <param name="value"> true : On, false : Off </param>
     public void OnLight(bool value)
     {
         // 사운드를 여기 놔둔 이유는, 꺼지든 켜지든 스위치를 누르기 때문. 배터리가 없어도 스위치를 누르기 때문!
@@ -79,19 +87,27 @@ public class Lantern : MonoBehaviour {
         }
     }
 
-    // check battery can use or not
+    /// <summary>
+    /// check battery can use or not
+    /// </summary>
     public bool CanUse()
     {
         return (_stateBattery == STATE_BATTERY.USE) ? true : false;
     }
 
-    // Set Battery amount
-    // Can use this function when a new battery is used in battery inventory.
+    /// <summary>
+    /// Set Battery amount
+    /// Can use this function when a new battery is used in battery inventory.
+    /// </summary>
+    /// <param name="value"> Battery Amount </param>
     public void SetBatteryAmount(float value)
     {
         _batteryAmount = value;
     }
 
+    /// <summary>
+    /// Initialize Lantern object.
+    /// </summary>
     private void Init()
     {
         // Lantern
@@ -100,18 +116,19 @@ public class Lantern : MonoBehaviour {
         _state = STATE_LIGHT.OFF;
 
         // Battery
-        _batteryConsume = 0.001f;
         _batteryAmount = 0;
         _batteryMax = 0;
         _stateBattery = STATE_BATTERY.USE;
+
+        Debug.Log("Lantern - Init");
     }
 
-    // Execute when Light is on.
+    /// <summary>
+    /// Execute when Light is on.
+    /// </summary>
     private void UseBattery()
     {
-        // _batteryAmount -= _batteryConsume;
         _inventory.UseBattery();
-        //_batteryAmount = _inventory.CurrentBatterySize();
 
         if(_batteryAmount <= 0.0f)
         {
@@ -122,8 +139,10 @@ public class Lantern : MonoBehaviour {
         // set UI
         _uiBattery.SetBatteryValue(_batteryAmount / _batteryMax);
     }
-    
-    // Update Lantern location by player hand location
+
+    /// <summary>
+    /// Update Lantern location by player hand location
+    /// </summary>    
     private void UpdateLocation()
     {
         Vector3 temp;
@@ -134,14 +153,17 @@ public class Lantern : MonoBehaviour {
         transform.SetPositionAndRotation(temp, temp2);
     }
 
+    /// <summary>
+    /// Update Battery Amount from Equped battery.
+    /// </summary>    
     private void UpdateBattery()
     {
-        _batteryAmount = _inventory.CurrentBatterySize();
+        // Initialize max battery amount
+        if (_batteryMax == 0f)
+            _batteryMax = _inventory.GetTotalBatterySize();
 
-        // newinventory에서 database가 awake에서 초기화된다면 ㅇㅇ.
-        // 나중에 start에서 한 번만 실행시킬 수 있도록 바꾸기.
-        _batteryMax = _inventory.TotalBatterySize();
-
+        _batteryAmount = _inventory.GetCurrentBatterySize();
+        
         // 배터리 양이 0에서 바뀌면 사용가능하게 만들어야한다.
         if (_stateBattery == STATE_BATTERY.EMPTY)
         {

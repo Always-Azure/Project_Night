@@ -19,6 +19,7 @@ public class MouseLook : MonoBehaviour {
 
 	public enum RotationAxes { MouseXAndY = 0, MouseX = 1, MouseY = 2 }
 	public RotationAxes axes = RotationAxes.MouseXAndY;
+
 	public float sensitivityX = 15F;
 	public float sensitivityY = 15F;
 
@@ -30,22 +31,18 @@ public class MouseLook : MonoBehaviour {
 
 	float rotationY = 0F;
 
+    public NewInventory Inven;  // Inventory
 
-    //public Inventory inven;
-    public NewInventory Inven;
-
-
-    void Start()
+    private void Awake()
     {
         // Make the rigid body not change rotation
         if (GetComponent<Rigidbody>())
             GetComponent<Rigidbody>().freezeRotation = true;
-        //Inven = GameObject.FindGameObjectWithTag("Inventory").GetComponent<NewInventory>();
-
     }
 
     void Update ()
 	{
+        // Check Inventory is open now
         if (Inven.GetSlotOnCheck() == false)
         {
             if (axes == RotationAxes.MouseXAndY)

@@ -5,18 +5,26 @@ using UnityEngine.SceneManagement;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
+/// <summary>
+/// Process Game start
+/// </summary>
+/// <author> SangJun, YeHun </author>
 public class GameStartButton : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IPointerDownHandler {
 
-    private Dictionary<string, Sprite> _cash_image;
-    private Image _Image;
+    public AudioClip[] _soundlist;  // 음원 파일
+
+    private Dictionary<string, Sprite> _cash_image; // All Loaded Button Image
+    private Image _Image;   // Now Button Image
     private AudioSource _audio;
 
-    public AudioClip[] _soundlist;
-    
-    // Use this for initialization
-    void Start () {
+    private void Awake()
+    {
         object[] temp;
 
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
+
+        // Load Button Images
         _cash_image = new Dictionary<string, Sprite>();
         _Image = GetComponent<Image>();
         _audio = gameObject.AddComponent<AudioSource>();
@@ -30,14 +38,20 @@ public class GameStartButton : MonoBehaviour, IPointerEnterHandler, IPointerExit
         }
     }
 
+    /// <summary>
+    /// Start Game.
+    /// </summary>
     public void GameStart()
     {
-        // Player choose GameStart button.
-        // Scene change the Scene that player died.
         SceneManager.LoadScene("Manager");
         SceneManager.LoadScene("Stage1", LoadSceneMode.Additive);
+
+        Debug.Log("Game Start");
     }
 
+    /// <summary>
+    /// Execute when Move Mouse Pointer to Button
+    /// </summary>
     public void OnPointerEnter(PointerEventData eventData)
     {
         _Image.sprite = _cash_image["start_btn_highlighted_white"];
@@ -46,11 +60,17 @@ public class GameStartButton : MonoBehaviour, IPointerEnterHandler, IPointerExit
         _audio.Play();
     }
 
+    /// <summary>
+    /// Execute when Move out Mouse Pointer from Button
+    /// </summary>
     public void OnPointerExit(PointerEventData eventData)
     {
         _Image.sprite = _cash_image["start_btn_normal_white"];
     }
 
+    /// <summary>
+    /// Execute when Click Exit Button
+    /// </summary>
     public void OnPointerDown(PointerEventData eventData)
     {
         _Image.sprite = _cash_image["start_btn_clicked_white"];

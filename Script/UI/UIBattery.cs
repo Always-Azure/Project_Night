@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Handle UI about Battery
+/// </summary>
+/// <author> YeHun </author>
 public class UIBattery : MonoBehaviour
 {
-    private Slider _batterySlider;  // About Battery UI.
-    private Dictionary<string, GameObject> _batteryImage;
+    private Slider _batterySlider;  // 배터리 UI
+    private Dictionary<string, GameObject> _batteryImage;   // 배터리 이미지
 
     private void Awake()
     {
@@ -19,10 +23,12 @@ public class UIBattery : MonoBehaviour
         _batteryImage.Add("Battery2/3", GameObject.Find("Battery2/3").gameObject);
         _batteryImage.Add("Battery1/3", GameObject.Find("Battery1/3").gameObject);
     }
-
-    /* Change Image from value of battery.
-     * Execute when batterySlider's value is changed.
-     */
+    
+    /// <summary>
+    /// Change Image from value of battery.
+    /// Execute when batterySlider's value is changed.
+    /// </summary>
+    /// <param name="value"> Battery Amount </param>
     private void OnBatteryChanged(float value)
     {
         if (value < 0.33)
@@ -51,6 +57,10 @@ public class UIBattery : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Set Battery Amount
+    /// </summary>
+    /// <param name="value"> Battery Amount </param>
     public void SetBatteryValue(float value)
     {
         _batterySlider.value = value;

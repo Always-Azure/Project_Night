@@ -4,17 +4,22 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI; // use hp ui
 
+/// <summary>
+/// Handle general player process
+/// </summary>
+/// <author> SangJun, YeHun </author>
 public class PlayerManager : MonoBehaviour {
 
+    // Property
     public STATE_PLAYER State { get { return _state; } }
 
     private GameManager _gameManager;   // GameManager
     private NewInventory _newInven; // Inventory
     private STATE_PLAYER _state;    // Player Condition
     private PlayerState _playerState;   // Player State
-    private float _playerMaxHp = 100.0f;
-    private float _playerCurrentHp;
-    private float _degree = 1f;
+    private float _playerMaxHp = 100.0f;    // Max Hp
+    private float _playerCurrentHp; // Current Hp
+    private float _degree = 1f; // Decrease amount of HP
     
     private AudioSource _audioMovement; // Movement Sound
     private AudioSource _audioEffectInner; // Effect Sound by myself
@@ -24,9 +29,6 @@ public class PlayerManager : MonoBehaviour {
     private Lantern _lantern;   // Lantern
     private UIHp _uiHp;     // UI(HP) Controller
 
-    private float _degreeTime = 0.5f;
-
-    private float _timer;
     private float _PosionTimer;
     public bool _PosionOn = false;
 
@@ -44,22 +46,30 @@ public class PlayerManager : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        // check inventory is opened now
         if (!_newInven.GetSlotOnCheck())
             PlayerAction();
 
+        // Delay check consume potion.
         if (_PosionTimer < 1.2f && _PosionOn == false)
             _PosionTimer += Time.deltaTime;
         else
             _PosionOn = true;
     }
 
-    // 플레이어 상태 초기화
+    /// <summary>
+    /// Initialize Player state
+    /// This method will execute when a new stage start
+    /// </summary>
     public void InitState()
     {
         _playerCurrentHp = _playerMaxHp;
         _degree = 1f;
     }
-    // 플레이어에서 필요한 Component들 초기화
+
+    /// <summary>
+    /// Initialize player's components
+    /// </summary>
     private void Init()
     {
         _lantern = transform.Find("Lantern").GetComponent<Lantern>();
@@ -74,9 +84,15 @@ public class PlayerManager : MonoBehaviour {
         _audioEffectInner = gameObject.AddComponent<AudioSource>();
         _audioEffectOutter = gameObject.AddComponent<AudioSource>();
         _soundlist = AudioManager.instance.SoundInfo.GetSubDir("Player").GetSoundList();
+
+        Debug.Log("PlayerManager - Init");
     }
 
-    public void TakeDamage(float dmg)
+    /// <summary>
+    /// Handle the Player attacked situations
+    /// </summary>
+    /// <param name="dmg"> Damage </param>
+    public void TakeDamage(float dmg, TYPE_ATTACK type)
     {
         if(_state == STATE_PLAYER.ALIVE)
         {
@@ -85,12 +101,21 @@ public class PlayerManager : MonoBehaviour {
 
             _playerCurrentHp -= dmg;
 
+            // Set UI
             _uiHp.SetHpValue(_playerCurrentHp);
 
             // Sound
-            // 환경으로 인해 피해 입는 소리랑, 몬스터한테 맞는 소리랑 같기에 게임 플레이하면서 소리가 너무 시끄럽다. 그래서 주석처리해둠.
-            //_soundlist["Attacked"].Play();
+            switch (type)
+            {
+                case TYPE_ATTACK.ENERMY:
+                    _soundlist["Attacked"].Play(_audioEffectOutter);
+                    break;
+
+                case TYPE_ATTACK.ENVIRONMENT:
+                    break;
+            }
             
+            // Check is player death or not
             if (_playerCurrentHp <= 0.0f)
             {
                 PlayerDeath();
@@ -98,6 +123,10 @@ public class PlayerManager : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Handle the player consume posions
+    /// </summary>
+    /// <param name="posion"> Amount Increase HP </param>
     public void TakePosion(float posion)
     {
         if (_state == STATE_PLAYER.ALIVE && _PosionTimer > 1.2f)
@@ -111,27 +140,25 @@ public class PlayerManager : MonoBehaviour {
                 _playerCurrentHp = 100;
             
             _uiHp.SetHpValue(_playerCurrentHp);
+
             _PosionTimer = 0f;
             _PosionOn = false;
         }
     }
 
-    // Controll The Player Action.
+    /// <summary>
+    /// Controll The Player Action.
+    /// </summary>
     private void PlayerAction()
     {
         // Click Left Mouse Button
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("왼쪽 마우스 on");
-
             _lantern.OnLight(true);
-
         }
         // Up Left Mouse Button
         else if (Input.GetMouseButtonUp(0))
         {
-            Debug.Log("왼쪽 마우스 off");
-
             _lantern.OnLight(false);
         }
 
@@ -147,10 +174,8 @@ public class PlayerManager : MonoBehaviour {
         // [ Player Movement ]
         if (Input.GetButton("Vertical") || Input.GetButton("Horizontal"))
         {
-            // 조건문에서 GetButtonDown을 써주고 싶지만, 앞으로만 가는 상황에서 jump했다가 땅에 착지하면 해당 조건문은 실행이 되지 않기에, GetButton으로 했다.
             if (_playerState.IsStanding == true)
             {
-                // IsStanding == true로 확인할 수 있지만, 움직이려고 하는 것이기 때문에, Walking == false로 확인해줌.
                 if (_playerState.IsWalking == false && _playerState.IsJump == false)
                 {
                     _playerState.Walking();
@@ -158,7 +183,7 @@ public class PlayerManager : MonoBehaviour {
                 }
             }
         }
-        // 멈췄을 때 코드.
+        // Player Stop or Stand
         else if(Input.GetButton("Vertical") == false && Input.GetButton("Horizontal") == false)
         {
             if(_playerState.IsStanding == false)
@@ -169,26 +194,29 @@ public class PlayerManager : MonoBehaviour {
         }
     }
 
-    // Execute when player die.
-    void PlayerDeath()
+    /// <summary>
+    /// Execute when player die.
+    /// </summary>
+    private void PlayerDeath()
     {
-        //isDead = true;
         _state = STATE_PLAYER.DEAD;
-        Debug.Log("PlayerDead");
-
+        
+        // Scene change -> GameOverScene
         SceneManager.LoadScene("GameOverScene");
-
     }
 
-    // 따로 만들어주는 이유는, StreetLight가 시간이 다되서 꺼지게 되면, 그 때, player의 TriggerExit가 실행되지 않기 때문!
+    /// <summary>
+    /// Handle when player exit to streetlight
+    /// Why I make this method, because when streetlight turn of by zero battery, player's TriggerExit will not execute.
+    /// So I make this method for handling that player exit to streetlight
+    /// </summary>
     public void ExitToStreetlight()
     {
-        Debug.Log("위험해졌습니다!");
         _state = STATE_PLAYER.ALIVE;
     }
 
-    //Trigger & Collision with Player Object
-    void OnControllerColliderHit(ControllerColliderHit hit) // Player Controller가 있을 떄, 물리 충돌 감지
+    // Player Controller가 있을 떄, 물리 충돌 감지
+    void OnControllerColliderHit(ControllerColliderHit hit)
     {
         if (hit.gameObject.tag == "Wall")
         {
@@ -210,41 +238,14 @@ public class PlayerManager : MonoBehaviour {
 
     void OnTriggerEnter(Collider col)
     {
-        if (col.gameObject.tag == "Posion")
-        {
-            Debug.Log("Near Posion");
-            if (Input.GetKeyDown(KeyCode.F))
-            {
-            }
-        }
-
-        if (col.gameObject.tag == "Btr")
-        {
-            Debug.Log("Near Btr");
-        }
-
         if(col.gameObject.tag == "StreetLight")
         {
-            Debug.Log("안전해졌습니다!");
             _state = STATE_PLAYER.SAFETY;
         }
     }
 
     void OnTriggerStay(Collider col)
     {
-        if (col.gameObject.tag == "Posion")
-        {
-            if (Input.GetKeyDown(KeyCode.F))
-            {
-                Debug.Log("Get Posion");
-            }
-        }
-
-        if (col.gameObject.tag == "Btr")
-        {
-            //Debug.Log("Near Btr");
-        }
-
         if (col.gameObject.tag == "StreetLight")
         {
             if(_state != STATE_PLAYER.SAFETY)
@@ -256,7 +257,6 @@ public class PlayerManager : MonoBehaviour {
     {
         if(col.gameObject.tag == "StreetLight")
         {
-            //_state = STATE_PLAYER.ALIVE;
             ExitToStreetlight();
         }
     }
