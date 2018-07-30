@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Control player state(What is player doing).
+/// </summary>
+/// <author> YeHun </author>
 public class PlayerState{
 
     // Property

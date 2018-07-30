@@ -3,211 +3,174 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+/// <summary>
+/// Inventory System
+/// </summary>
+/// <author> SangJun </author>
 public class NewInventory : MonoBehaviour
 {
-    UIManager UImanager;
     public enum ItemLocation
     {
         Inventory, Equip, TreasureBox
     }
-    //TreasureBox TBox; //생성된 박스의 정보를 가져옴. //기존 스크립트 갱신필요
+
+    public GameObject inventorySlot;
+    public GameObject inventoryItem;
 
     //Inventory
-    GameObject InventoryPanel;
-    GameObject InvenSlotPanel;
-    ItemDatabase database;
-    private int InventorySlotAmount = 16;
-    private List<Item> InventoryItems = new List<Item>();
-    private List<GameObject> InventorySlots = new List<GameObject>();
-    private bool InvenTrigger = false;
+    private GameObject _inventoryPanel;
+    private GameObject _invenSlotPanel;
+    private ItemDatabase _database;
+    private List<Item> _inventoryItems = new List<Item>();
+    private List<GameObject> _inventorySlots = new List<GameObject>();
+    private int _inventorySlotAmount = 16;
+    private bool _invenTrigger = false;
 
     //Equip
-    GameObject EquipPanel;
-    GameObject EquipSlotPanel;
-    private int EquipSlotAmount = 3;
-    private List<Item> EquipItems = new List<Item>();
-    private List<GameObject> EquipSlots = new List<GameObject>();
-    private bool EquipTrigger = false;
+    private GameObject _equipPanel;
+    private GameObject _equipSlotPanel;
+    private List<Item> _equipItems = new List<Item>();
+    private List<GameObject> _equipSlots = new List<GameObject>();
+    private int _equipSlotAmount = 3;
+    private bool _equipTrigger = false;
 
     //Treasure Box
-    public TreasureBox TreasureBox;
-    GameObject TreasureBoxPanel;
-    GameObject TreasureBoxSlotPanel;
-    private int TBoxSlotAmount = 3;
-    private List<Item> TBoxItems = new List<Item>();
-    private List<GameObject> TBoxSlots = new List<GameObject>();
-    private bool TBoxTrigger = false;
+    public TreasureBox treasureBox;
 
-    public GameObject InventorySlot;
-    public GameObject InventoryItem;
+    private GameObject _treasureBoxPanel;
+    private GameObject _treasureBoxSlotPanel;
+    private List<Item> _tBoxItems = new List<Item>();
+    private List<GameObject> _tBoxSlots = new List<GameObject>();
+    private int _tBoxSlotAmount = 3;
+    private bool _tBoxTrigger = false;
+
     private bool SlotOnCheck = false;
 
     private void Start()
     {
-        database = GetComponent<ItemDatabase>();
-        UImanager = GameObject.Find("UIManager").GetComponent<UIManager>();
+        // 마우스 커서 보이지 않도록
+        Cursor.visible = false;
 
-        InventoryPanel = GameObject.Find("Inventory");
-        InvenSlotPanel = InventoryPanel.transform.Find("Slot Panel").gameObject;
-        InventoryPanel.SetActive(InvenTrigger);
+        //아이템 데이터베이스 내용을 저장
+        _database = GetComponent<ItemDatabase>();
 
-        EquipPanel = GameObject.Find("Equip");
-        EquipSlotPanel = EquipPanel.transform.Find("Slot Panel").gameObject;
-        EquipPanel.SetActive(EquipTrigger);
+        //인벤토리 시스템을 만들기 위해 필요한 프리펩과 내용을 가져옴
+        _inventoryPanel = GameObject.Find("Inventory");
+        _invenSlotPanel = _inventoryPanel.transform.Find("Slot Panel").gameObject;
+        _inventoryPanel.SetActive(_invenTrigger);
 
-        TreasureBoxPanel = GameObject.Find("TreasureBox");
-        TreasureBoxSlotPanel = TreasureBoxPanel.transform.Find("Slot Panel").gameObject;
-        TreasureBoxPanel.SetActive(TBoxTrigger);
+        _equipPanel = GameObject.Find("Equip");
+        _equipSlotPanel = _equipPanel.transform.Find("Slot Panel").gameObject;
+        _equipPanel.SetActive(_equipTrigger);
 
+        _treasureBoxPanel = GameObject.Find("TreasureBox");
+        _treasureBoxSlotPanel = _treasureBoxPanel.transform.Find("Slot Panel").gameObject;
+        _treasureBoxPanel.SetActive(_tBoxTrigger);
 
-        for (int i = 0; i < InventorySlotAmount; ++i)
+        //각 인벤토리 시스템별 슬롯 생성
+        for (int i = 0; i < _inventorySlotAmount; ++i)
         {
-            InventoryItems.Add(new Item());
-            InventorySlots.Add(Instantiate(InventorySlot));
-            InventorySlots[i].GetComponent<Slot>().ID = i;
-            InventorySlots[i].transform.SetParent(InvenSlotPanel.transform);
+            _inventoryItems.Add(new Item());
+            _inventorySlots.Add(Instantiate(inventorySlot));
+            _inventorySlots[i].GetComponent<Slot>().ID = i;
+            _inventorySlots[i].transform.SetParent(_invenSlotPanel.transform);
         }
 
-        for (int i = 0; i < EquipSlotAmount; ++i)
+        for (int i = 0; i < _equipSlotAmount; ++i)
         {
-            EquipItems.Add(new Item());
-            EquipSlots.Add(Instantiate(InventorySlot));
-            EquipSlots[i].GetComponent<Slot>().ID = i;
-            EquipSlots[i].transform.SetParent(EquipSlotPanel.transform);
+            _equipItems.Add(new Item());
+            _equipSlots.Add(Instantiate(inventorySlot));
+            _equipSlots[i].GetComponent<Slot>().ID = i;
+            _equipSlots[i].transform.SetParent(_equipSlotPanel.transform);
         }
 
-        for (int i = 0; i < TBoxSlotAmount; ++i)
+        for (int i = 0; i < _tBoxSlotAmount; ++i)
         {
-            TBoxItems.Add(new Item());
-            TBoxSlots.Add(Instantiate(InventorySlot));
-            TBoxSlots[i].GetComponent<Slot>().ID = i;
-            TBoxSlots[i].transform.SetParent(TreasureBoxSlotPanel.transform);
+            _tBoxItems.Add(new Item());
+            _tBoxSlots.Add(Instantiate(inventorySlot));
+            _tBoxSlots[i].GetComponent<Slot>().ID = i;
+            _tBoxSlots[i].transform.SetParent(_treasureBoxSlotPanel.transform);
         }
 
-
-        AddItem_Inventory(0);
-        AddItem_Inventory(1);
-        AddItem_Inventory(1);
-        AddItem_Equip(0);
-        AddItem_Inventory(2);
-
-        //AddItem_Equip(1);
-        //AddItem_TreasureBox(1);
-        //AddItem_TreasureBox(1);
-        //AddItem_TreasureBox(1);
+        //각 인벤토리 시스템에 최초 아이템 생성
+        AddItemToInventory(0);
+        AddItemToInventory(1);
+        AddItemToInventory(1);
+        AddItemToEquip(0);
+        AddItemToInventory(2);
     }
+
     private void Update()
     {
         //각 창의 On Off 확인
         if (Input.GetButtonDown("Inventory"))
         {
-            InvenTrigger = !InvenTrigger;
-            if (InvenTrigger)
-                InventoryPanel.SetActive(InvenTrigger);
+            _invenTrigger = !_invenTrigger;
+            if (_invenTrigger)
+                _inventoryPanel.SetActive(_invenTrigger);
             else
-                InventoryPanel.SetActive(InvenTrigger);
+                _inventoryPanel.SetActive(_invenTrigger);
         }
         if (Input.GetButtonDown("Equipment"))
         {
-            EquipTrigger = !EquipTrigger;
-            if (EquipTrigger)
-                EquipPanel.SetActive(EquipTrigger);
+            _equipTrigger = !_equipTrigger;
+            if (_equipTrigger)
+                _equipPanel.SetActive(_equipTrigger);
             else
-                EquipPanel.SetActive(EquipTrigger);
+                _equipPanel.SetActive(_equipTrigger);
         }
-        //if (Input.GetButtonDown("TreasureBox"))
-        //{
-        //    TBoxTrigger = !TBoxTrigger;
 
-        //    if (TBoxTrigger)
-        //        TreasureBoxPanel.SetActive(TBoxTrigger);
-        //    else
-        //        TreasureBoxPanel.SetActive(TBoxTrigger);
-        //}
-
-
-        //각 트리거 중 하나라도 true면 슬롯은 켜져있는 상태이다.
-        if (InvenTrigger || EquipTrigger || TBoxTrigger) { SlotOnCheck = true; }
-        else { SlotOnCheck = false; }
+        //인벤토리 시스템이 동작하는 중인지 판별. 상황에 따라 마우스 처리
+        if (_invenTrigger || _equipTrigger || _tBoxTrigger) {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            //Cursor.lockState = CursorLockMode.Confined;
+            SlotOnCheck = true;
+        }
+        else {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            SlotOnCheck = false;
+        }
     }
 
+    /// <summary>
+    /// Add Item
+    /// </summary>
+    /// <param name="_itemLocation"> inventory type </param>
+    /// <param name="id"> item id </param>
     public void AddItem(ItemLocation _itemLocation, int id)
     {
         if (_itemLocation == ItemLocation.Inventory)
         {
-            AddItem_Inventory(id);
+            AddItemToInventory(id);
         }
         else if (_itemLocation == ItemLocation.Equip)
         {
-            AddItem_Equip(id);
+            AddItemToEquip(id);
         }
         else
         {
-            AddItem_TreasureBox(id);
+            AddItemToTreasureBox(id);
         }
     }
-    private void AddItem_Inventory(int id)
+    
+    /// <summary>
+    /// Add Item in basic inventory
+    /// </summary>
+    /// <param name="id"> item id </param>
+    private void AddItemToInventory(int id)
     {
-        {
-            Item itemtoAdd = database.FetchItemByID(id);
-            if (itemtoAdd.stackable && CheckIfItemIsInventory(itemtoAdd))
-            {
-                //같은게 존재하고 이게 중첩이 가능하다면
-                for (int i = 0; i < InventoryItems.Count; ++i)
-                {
-                    if (InventoryItems[i].itemID == id)
-                    {
-                        ItemData data = InventorySlots[i].transform.GetChild(0).GetComponent<ItemData>();
-                        ++data.Amount;
-                        data.transform.GetChild(0).GetComponent<Text>().text = data.Amount.ToString();
-                    }
-                }
-            }
-            else
-            {
-                for (int i = 0; i < InventoryItems.Count; ++i)
-                {
-                    if (InventoryItems[i].itemID == -1)
-                    {
-                        InventoryItems[i] = itemtoAdd;
-                        GameObject itemObj = Instantiate(InventoryItem);
-                        itemObj.GetComponent<ItemData>().item = itemtoAdd;
-                        itemObj.GetComponent<ItemData>().slot = i;
-                        itemObj.GetComponent<ItemData>().Location = "Inventory";
-                        itemObj.transform.SetParent(InventorySlots[i].transform);
-                        itemObj.transform.position = Vector2.zero; // parent
+        Item itemtoAdd = _database.FetchItemByID(id);
 
-                        itemObj.GetComponent<Image>().sprite = itemtoAdd.Sprite;
-                        itemObj.name = itemtoAdd.itemName;
-
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    bool CheckIfItemIsInventory(Item item)
-    {
-        for (int i = 0; i < InventoryItems.Count; ++i)
-        {
-            if (InventoryItems[i].itemID == item.itemID)
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-    private void AddItem_Equip(int id)
-    {
-        Item itemtoAdd = database.FetchItemByID(id);
-        if (itemtoAdd.stackable && CheckIfItemIsEquip(itemtoAdd))
+        if (itemtoAdd.stackable && IsItemInInventory(itemtoAdd))
         {
             //같은게 존재하고 이게 중첩이 가능하다면
-            for (int i = 0; i < EquipItems.Count; ++i)
+            for (int i = 0; i < _inventoryItems.Count; ++i)
             {
-                if (EquipItems[i].itemID == id)
+                if (_inventoryItems[i].itemID == id)
                 {
-                    ItemData data = EquipSlots[i].transform.GetChild(0).GetComponent<ItemData>();
+                    ItemData data = _inventorySlots[i].transform.GetChild(0).GetComponent<ItemData>();
                     ++data.Amount;
                     data.transform.GetChild(0).GetComponent<Text>().text = data.Amount.ToString();
                 }
@@ -215,16 +178,16 @@ public class NewInventory : MonoBehaviour
         }
         else
         {
-            for (int i = 0; i < EquipItems.Count; ++i)
+            for (int i = 0; i < _inventoryItems.Count; ++i)
             {
-                if (EquipItems[i].itemID == -1)
+                if (_inventoryItems[i].itemID == -1)
                 {
-                    EquipItems[i] = itemtoAdd;
-                    GameObject itemObj = Instantiate(InventoryItem);
+                    _inventoryItems[i] = itemtoAdd;
+                    GameObject itemObj = Instantiate(inventoryItem);
                     itemObj.GetComponent<ItemData>().item = itemtoAdd;
                     itemObj.GetComponent<ItemData>().slot = i;
-                    itemObj.GetComponent<ItemData>().Location = "Equip";
-                    itemObj.transform.SetParent(EquipSlots[i].transform);
+                    itemObj.GetComponent<ItemData>().Location = "Inventory";
+                    itemObj.transform.SetParent(_inventorySlots[i].transform);
                     itemObj.transform.position = Vector2.zero; // parent
 
                     itemObj.GetComponent<Image>().sprite = itemtoAdd.Sprite;
@@ -235,28 +198,40 @@ public class NewInventory : MonoBehaviour
             }
         }
     }
-    bool CheckIfItemIsEquip(Item item)
+
+    /// <summary>
+    /// Check Itme is in Inventory.
+    /// </summary>
+    /// <param name="item"> Item </param>
+    /// <returns> true : exist, false : not exist </returns>
+    private bool IsItemInInventory(Item item)
     {
-        for (int i = 0; i < EquipItems.Count; ++i)
+        for (int i = 0; i < _inventoryItems.Count; ++i)
         {
-            if (EquipItems[i].itemID == item.itemID)
+            if (_inventoryItems[i].itemID == item.itemID)
             {
                 return true;
             }
         }
         return false;
     }
-    private void AddItem_TreasureBox(int id)
+
+    /// <summary>
+    /// Add Item in Equip inventory
+    /// </summary>
+    /// <param name="id"></param>
+    private void AddItemToEquip(int id)
     {
-        Item itemtoAdd = database.FetchItemByID(id);
-        if (itemtoAdd.stackable && CheckIfItemIsTreasureBox(itemtoAdd))
+        Item itemtoAdd = _database.FetchItemByID(id);
+
+        if (itemtoAdd.stackable && IsItemInEquip(itemtoAdd))
         {
             //같은게 존재하고 이게 중첩이 가능하다면
-            for (int i = 0; i < TBoxItems.Count; ++i)
+            for (int i = 0; i < _equipItems.Count; ++i)
             {
-                if (TBoxItems[i].itemID == id)
+                if (_equipItems[i].itemID == id)
                 {
-                    ItemData data = TBoxSlots[i].transform.GetChild(0).GetComponent<ItemData>();
+                    ItemData data = _equipSlots[i].transform.GetChild(0).GetComponent<ItemData>();
                     ++data.Amount;
                     data.transform.GetChild(0).GetComponent<Text>().text = data.Amount.ToString();
                 }
@@ -264,20 +239,17 @@ public class NewInventory : MonoBehaviour
         }
         else
         {
-            for (int i = 0; i < TBoxItems.Count; ++i)
+            for (int i = 0; i < _equipItems.Count; ++i)
             {
-                if (TBoxItems[i].itemID == -1)
+                if (_equipItems[i].itemID == -1)
                 {
-                    TBoxItems[i] = itemtoAdd;
-                    GameObject itemObj = Instantiate(InventoryItem);
+                    _equipItems[i] = itemtoAdd;
+                    GameObject itemObj = Instantiate(inventoryItem);
                     itemObj.GetComponent<ItemData>().item = itemtoAdd;
                     itemObj.GetComponent<ItemData>().slot = i;
-                    itemObj.GetComponent<ItemData>().Location = "TreasureBox";
-                    itemObj.transform.SetParent(TBoxSlots[i].transform);
-                    Debug.Log("aaaaa" + TBoxSlots[i].transform.position);
-                    //itemObj.transform.position = Vector2.zero; // parent
-                    itemObj.transform.position = new Vector2(itemObj.transform.parent.position.x, itemObj.transform.parent.position.y) + Vector2.zero;
-
+                    itemObj.GetComponent<ItemData>().Location = "Equip";
+                    itemObj.transform.SetParent(_equipSlots[i].transform);
+                    itemObj.transform.position = Vector2.zero; // parent
                     itemObj.GetComponent<Image>().sprite = itemtoAdd.Sprite;
                     itemObj.name = itemtoAdd.itemName;
 
@@ -286,145 +258,243 @@ public class NewInventory : MonoBehaviour
             }
         }
     }
-    bool CheckIfItemIsTreasureBox(Item item)
+
+    /// <summary>
+    /// Check Itme is in Equip inventory
+    /// </summary>
+    /// <param name="item"> Item </param>
+    /// <returns> true : exist, false : not exist </returns>
+    private bool IsItemInEquip(Item item)
     {
-        for (int i = 0; i < TBoxItems.Count; ++i)
+        for (int i = 0; i < _equipItems.Count; ++i)
         {
-            if (TBoxItems[i].itemID == item.itemID)
+            if (_equipItems[i].itemID == item.itemID)
             {
                 return true;
             }
         }
         return false;
     }
-    private void AddNULLItem_TreasureBox(int id)
+
+    /// <summary>
+    /// Add Item in TreasureBox
+    /// </summary>
+    /// <param name="id"> Item id </param>
+    private void AddItemToTreasureBox(int id)
     {
+        Item itemtoAdd = _database.FetchItemByID(id);
+
+        if (itemtoAdd.stackable && IsItemInTreasureBox(itemtoAdd))
+        {
+            //같은게 존재하고 이게 중첩이 가능하다면
+            for (int i = 0; i < _tBoxItems.Count; ++i)
+            {
+                if (_tBoxItems[i].itemID == id)
+                {
+                    ItemData data = _tBoxSlots[i].transform.GetChild(0).GetComponent<ItemData>();
+                    ++data.Amount;
+                    data.transform.GetChild(0).GetComponent<Text>().text = data.Amount.ToString();
+                }
+            }
+        }
+        else
+        {
+            for (int i = 0; i < _tBoxItems.Count; ++i)
+            {
+                if (_tBoxItems[i].itemID == -1)
+                {
+                    _tBoxItems[i] = itemtoAdd;
+                    GameObject itemObj = Instantiate(inventoryItem);
+                    itemObj.GetComponent<ItemData>().item = itemtoAdd;
+                    itemObj.GetComponent<ItemData>().slot = i;
+                    itemObj.GetComponent<ItemData>().Location = "TreasureBox";
+                    itemObj.transform.SetParent(_tBoxSlots[i].transform);
+                    itemObj.transform.position = new Vector2(itemObj.transform.parent.position.x, itemObj.transform.parent.position.y) + Vector2.zero;
+                    itemObj.GetComponent<Image>().sprite = itemtoAdd.Sprite;
+                    itemObj.name = itemtoAdd.itemName;
+
+                    break;
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// Check Itme is in TreasureBox
+    /// </summary>
+    /// <param name="item"> Item </param>
+    /// <returns> true : exist, false : not exist </returns>
+    private bool IsItemInTreasureBox(Item item)
+    {
+        for (int i = 0; i < _tBoxItems.Count; ++i)
+        {
+            if (_tBoxItems[i].itemID == item.itemID)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Handle when there are empty slot in TreasureBox(Array).
+    /// ex) Array[item, x, x, item, x] => x = Null Item.
+    /// </summary>
+    /// <param name="id"></param>
+    private void AddNULLItemTreasureBox(int id)
+    {
+        //사실상 빈 칸일때는 continue를 하기때문에 필요없는 함수이긴 함.
         Item itemtoAdd = new Item();
 
-        TBoxItems[id] = itemtoAdd;
-        GameObject itemObj = Instantiate(InventoryItem);
+        _tBoxItems[id] = itemtoAdd;
+        GameObject itemObj = Instantiate(inventoryItem);
         itemObj.GetComponent<ItemData>().item = itemtoAdd;
         itemObj.GetComponent<ItemData>().slot = id;
         itemObj.GetComponent<ItemData>().Location = "TreasureBox";
-        itemObj.transform.SetParent(TBoxSlots[id].transform);
-        //itemObj.transform.position = Vector2.zero; // parent
-
+        itemObj.transform.SetParent(_tBoxSlots[id].transform);
         itemObj.transform.position = new Vector2(itemObj.transform.parent.position.x, itemObj.transform.parent.position.y) + Vector2.zero;
-
         itemObj.GetComponent<Image>().sprite = itemtoAdd.Sprite;
         itemObj.name = itemtoAdd.itemName;
     }
-    private void Add_TreasureBox(Item _item, int id)
+    /// <summary>
+    /// Handle when syncronize TreasureBox with Inventory
+    /// </summary>
+    /// <param name="_item"></param>
+    /// <param name="id"></param>
+    private void AddTreasureBox(Item _item, int id)
     {
-        TBoxItems[id] = _item;
-        GameObject itemObj = Instantiate(InventoryItem);
+        _tBoxItems[id] = _item;
+        GameObject itemObj = Instantiate(inventoryItem);
         itemObj.GetComponent<ItemData>().item = _item;
         itemObj.GetComponent<ItemData>().slot = id;
         itemObj.GetComponent<ItemData>().Location = "TreasureBox";
-        itemObj.transform.SetParent(TBoxSlots[id].transform);
-        //itemObj.transform.position = Vector2.zero; // parent
-
+        itemObj.transform.SetParent(_tBoxSlots[id].transform);
         itemObj.transform.position = new Vector2(itemObj.transform.parent.position.x, itemObj.transform.parent.position.y) + Vector2.zero;
-
         itemObj.GetComponent<Image>().sprite = _item.Sprite;
         itemObj.name = _item.itemName;
     }
 
+    /// <summary>
+    /// Get Total sloat count from each Inventory
+    /// </summary>
+    public int GetInventoryCount() { return _inventorySlotAmount; }
+    public int GetEquipCount() { return _equipSlotAmount; }
+    public int GetTreasureBoxCount() { return _tBoxSlotAmount; }
 
-    public int GetInventoryCount() { return InventorySlotAmount; }
-    public int GetEquipCount() { return EquipSlotAmount; }
-    public int GetTreasureBoxCount() { return TBoxSlotAmount; }
-
-    public int GetEquipSlotCount() { return EquipSlotAmount; }
+    /// <summary>
+    /// Check the inventory system is using now
+    /// </summary>
     public bool GetSlotOnCheck() { return SlotOnCheck; }
 
-    public float TotalBatterySize()
+    /// <summary>
+    /// Get Total Battery size.
+    /// </summary>
+    public float GetTotalBatterySize()
     {
-        return (GetEquipSlotCount() * database.FetchItemByID(1).itemSize);
+        return (GetEquipCount() * _database.FetchItemByID(1).itemSize);
     }
-    public float CurrentBatterySize()
+
+    /// <summary>
+    /// Get Current Battery size
+    /// </summary>
+    public float GetCurrentBatterySize()
     {
         float Size = 0;
         for (int i = 0; i < GetEquipCount(); ++i)
         {
-            if (EquipItems[i].itemID == 1)
-                Size += EquipItems[i].itemSize;
+            if (_equipItems[i].itemID == 1)
+                Size += _equipItems[i].itemSize;
         }
 
         return Size;
         ;
     }
+    /// <summary>
+    /// Process Use battery.
+    /// </summary>
     public void UseBattery()
     {
         for (int i = 0; i < GetEquipCount(); ++i)
         {
-            if (EquipItems[i].itemSize > 0)
+            if (_equipItems[i].itemSize > 0)
             {
-                EquipItems[i].itemSize -= 0.1f;
+                _equipItems[i].itemSize -= 0.1f;
                 break;
             }
         }
     }
 
-    public void Link_TreasureBox(TreasureBox Box) // 연동 시작시 정보를 가져옴 -> arr로.
+    /// <summary>
+    /// Syncronize with TreasureBox
+    /// Get TreasureBox data
+    /// </summary>
+    /// <param name="Box"></param>
+    public void LinkTreasureBox(TreasureBox Box)
     {
-        Item[] _TBoxList = Box.ItemList;
+        Item[] _tBoxList = Box.ItemList;
 
-        TBoxTrigger = true;
-        TreasureBoxPanel.SetActive(TBoxTrigger);
+        _tBoxTrigger = true;
+        _treasureBoxPanel.SetActive(_tBoxTrigger);
+        _invenTrigger = true;
+        _inventoryPanel.SetActive(_invenTrigger);
 
-        if (_TBoxList.Length > TBoxItems.Count)
-            Debug.Log("TreasureBox Count Different - Link_TreasureBox()");
+        if (_tBoxList.Length > _tBoxItems.Count)
+            Debug.Log("TreasureBox Count Different - Link_treasureBox()");
         else
         {
-            TreasureBox = Box;
+            treasureBox = Box;
             int i;
-            for (i = 0; i < _TBoxList.Length; ++i)
+            for (i = 0; i < _tBoxList.Length; ++i)
             {
-                if (_TBoxList[i] == null)
+                if (_tBoxList[i] == null)
                     continue;
-                    //AddNULLItem_TreasureBox(i);
 
-                if (_TBoxList[i].itemID != -1)
+                if (_tBoxList[i].itemID != -1)
                 {
-                     Add_TreasureBox(_TBoxList[i], i);
+                     AddTreasureBox(_tBoxList[i], i);
                 }
             }
         }
     }
-    public void CutOff_TreasureBox() // 연동 종료시 TBox 내용 초기화
-    {
-        TBoxTrigger = false;
-        TreasureBoxPanel.SetActive(TBoxTrigger);
 
-        TreasureBox = null;
+    /// <summary>
+    /// Release syncronize with TreasureBox
+    /// And initialize TreasureBox data to null
+    /// </summary>
+    public void CutOffTreasureBox() 
+    {
+        _tBoxTrigger = false;
+        _treasureBoxPanel.SetActive(_tBoxTrigger);
+        _invenTrigger = false;
+        _inventoryPanel.SetActive(_invenTrigger);
+
+        treasureBox = null;
 
         for (int i = 0; i < GetTreasureBoxCount(); ++i)
         {
-            if (TBoxSlots[i].transform.childCount != 0)
+            if (_tBoxSlots[i].transform.childCount != 0)
             {
-                TBoxItems[i] = new Item();
-                Destroy(TBoxSlots[i].transform.GetChild(0).gameObject);
+                _tBoxItems[i] = new Item();
+                Destroy(_tBoxSlots[i].transform.GetChild(0).gameObject);
             }
         }
         
     }
 
+    // Get, Set Methods
+    public List<Item> GetInventoryItems() { return _inventoryItems; }
+    public List<GameObject> GetInventorySlots() { return _inventorySlots; }
+    public List<Item> GetEquipItems() { return _equipItems; }
+    public List<GameObject> GetEquipSlots() { return _equipSlots; }
+    public List<Item> GetTreasureBoxItems() { return _tBoxItems; }
+    public List<GameObject> GetTreasureBoxSlots() { return _tBoxSlots; }
 
-    public List<Item> GetInventoryItems() { return InventoryItems; }
-    public List<GameObject> GetInventorySlots() { return InventorySlots; }
-    public List<Item> GetEquipItems() { return EquipItems; }
-    public List<GameObject> GetEquipSlots() { return EquipSlots; }
-    public List<Item> GetTreasureBoxItems() { return TBoxItems; }
-    public List<GameObject> GetTreasureBoxSlots() { return TBoxSlots; }
-
-    public Item GetInventoryItems(int id) { return InventoryItems[id]; }
-    public GameObject GetInventorySlots(int id) { return InventorySlots[id]; }
-    public Item GetEquipItems(int id) { return EquipItems[id]; }
-    public GameObject GetEquipSlots(int id) { return EquipSlots[id]; }
-    public Item GetTreasureBoxItems(int id) { return TBoxItems[id]; }
-    public GameObject GetTreasureBoxSlots(int id) { return TBoxSlots[id]; }
-
+    public Item GetInventoryItems(int id) { return _inventoryItems[id]; }
+    public GameObject GetInventorySlots(int id) { return _inventorySlots[id]; }
+    public Item GetEquipItems(int id) { return _equipItems[id]; }
+    public GameObject GetEquipSlots(int id) { return _equipSlots[id]; }
+    public Item GetTreasureBoxItems(int id) { return _tBoxItems[id]; }
+    public GameObject GetTreasureBoxSlots(int id) { return _tBoxSlots[id]; }
 
     public void SetItem(string Location, int id, Item _item)
     {
@@ -438,10 +508,10 @@ public class NewInventory : MonoBehaviour
         else if (Location == "Equip") SetEquipSlots(id, _item);
         else SetTreasureBoxSlots(id, _item);
     }
-    private void SetInventoryItems(int id, Item _item) { InventoryItems[id] = _item; }
-    private void SetInventorySlots(int id, GameObject _slot) { InventorySlots[id] = _slot; }
-    private void SetEquipItems(int id, Item _item) { EquipItems[id] = _item; }
-    private void SetEquipSlots(int id, GameObject _slot) { EquipSlots[id] = _slot; }
-    private void SetTreasureBoxItems(int id, Item _item) { TBoxItems[id] = _item; }
-    private void SetTreasureBoxSlots(int id, GameObject _slot) { TBoxSlots[id] = _slot; }
+    private void SetInventoryItems(int id, Item _item) { _inventoryItems[id] = _item; }
+    private void SetInventorySlots(int id, GameObject _slot) { _inventorySlots[id] = _slot; }
+    private void SetEquipItems(int id, Item _item) { _equipItems[id] = _item; }
+    private void SetEquipSlots(int id, GameObject _slot) { _equipSlots[id] = _slot; }
+    private void SetTreasureBoxItems(int id, Item _item) { _tBoxItems[id] = _item; }
+    private void SetTreasureBoxSlots(int id, GameObject _slot) { _tBoxSlots[id] = _slot; }
 }

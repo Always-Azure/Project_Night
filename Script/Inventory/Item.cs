@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Basic item 
+/// </summary>
+/// <author> SangJun </author>
 [System.Serializable]
 public class Item
 {
-    //private Animator _anim;
-
     public string itemName; //이름
     public ItemType itemType; // 타입
     public int itemID; // 아이디 - 구별자
@@ -23,7 +25,6 @@ public class Item
 
     public Item(string name, int id, string desc, ItemType type, float size)
     {
-        //Rect rect = new Rect()
         this.itemName = name;
         this.itemType = type;
         this.itemID = id;
@@ -32,7 +33,6 @@ public class Item
         this.Sprite = Resources.Load<Sprite>("Inventory/" + itemName);
         this.itemSize = size;
         this.stackable = false;
-        //_anim = GetComponent<Animator>();
     }
 
     public Item()
@@ -45,10 +45,4 @@ public class Item
     {
         return (Item)this.MemberwiseClone();
     }
-
-    //public void OnBoxOpen()
-    //{
-    //    _anim.SetBool("BoxOpen", true);
-    //}
-
 }

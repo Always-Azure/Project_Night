@@ -3,22 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
+/// <summary>
+/// Basic Enermy Data
+/// </summary>
+/// <author> YeHun </author>
 public class Enermy : MonoBehaviour
 {
-    public int hp;
-    public float damage;
+    public int hp;  // 체력
+    public float damage;    // 공격력
     public float timeAttack;    // 공격 주기
     public float timeAttacked;  // 피격 주기
 
+    private STATE_ENERMY _state;    // 상태
+    private TYPE_ENERMY _type;  // 타입
     private Material _material;
-    private STATE_ENERMY _state;
-    private TYPE_ENERMY _type;
-    private Animator anim;
-    private AudioSource _audio;
-    private Dictionary<string, Sound> _soundlist;
+    private Animator _anim;  // 애니메이션
+    private AudioSource _audio; // 사운드
+    private Dictionary<string, Sound> _soundlist; // 사운드 리스트
 
     // Navigation 관련
-    private Transform _tfPlayer;
+    private Transform _tfPlayer;    // Player Location
     private NavMeshAgent _navAgent;
 
     // Common
@@ -29,19 +33,12 @@ public class Enermy : MonoBehaviour
         init();
     }
 
-    // Use this for initialization
-    void Start()
-    {
-
-    }
-
     // Update is called once per frame
     void Update()
     {
         if (_state == STATE_ENERMY.ALIVE)
         {
-            LookPlayer();
-
+            // Track Player per second
             if (_timer > 1.0f)
             {
                 _navAgent = gameObject.GetComponent<NavMeshAgent>();
@@ -56,15 +53,20 @@ public class Enermy : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Initialize Enermy data.
+    /// </summary>
     private void init()
     {
-        anim = transform.GetComponent<Animator>();
-        _state = STATE_ENERMY.SPAWNING;
-        _type = TYPE_ENERMY.RABBIT;
         hp = 100;
         damage = 5.0f;
 
+        _state = STATE_ENERMY.SPAWNING;
+        _type = TYPE_ENERMY.RABBIT;
+        _anim = transform.GetComponent<Animator>();
         _audio = gameObject.AddComponent<AudioSource>();
+        
+        // Get Soundlist by enermy type
         switch(_type)
         {
             case TYPE_ENERMY.BAT:
@@ -74,26 +76,24 @@ public class Enermy : MonoBehaviour
             case TYPE_ENERMY.RABBIT:
                 _soundlist = AudioManager.instance.SoundInfo.GetSubDir("Monster").GetSubDir("Rabbit").GetSoundList(_audio);
                 break;
-        }
-        
+        }   
     }
 
+    /// <summary>
+    /// Process when enermy dead
+    /// </summary>
     public void OnDead()
     {
         _state = STATE_ENERMY.DEAD;
-        // 죽고 나서는 불 필요한 충돌을 없애기 위해 끄기.
         GetComponent<NavMeshAgent>().enabled = false;
-        GetComponent<Rigidbody>().useGravity = false;
+        Destroy(GetComponent<Rigidbody>());
         transform.GetComponent<SphereCollider>().enabled = false;
         transform.GetComponent<CapsuleCollider>().enabled = false;
-        //GetComponent<Renderer>().material = deadMaterial;
 
-        // Colider을 제거하니까 땅에 서있지 못한다
-        // GetComponent<SphereCollider>().enabled = false;
-
-        anim.CrossFade("OnDead", 0.1f);
-        anim.SetBool("Idle", false);
-        anim.SetBool("OnDead", true);
+        // Animation
+        _anim.CrossFade("OnDead", 0.1f);
+        _anim.SetBool("Idle", false);
+        _anim.SetBool("OnDead", true);
 
         // Sound
         _soundlist["Death"].Play();
@@ -102,38 +102,23 @@ public class Enermy : MonoBehaviour
         GameManager.instance.MonsterDead();
     }
 
+    /// <summary>
+    /// Attack Animation
+    /// </summary>
     private void OnAnimAttack()
     {
-        anim.CrossFade("OnAttack", 0.1f);
+        _anim.CrossFade("OnAttack", 0.1f);
     }
 
+    /// <summary>
+    /// Attacked Animation
+    /// </summary>
     private void OnAnimAttacked()
     {
-        anim.CrossFade("OnAttacked", 0.1f);
+        _anim.CrossFade("OnAttacked", 0.1f);
 
         // Sound
         _soundlist["Attacked"].Play();
-    }
-
-    // Look Player
-    void LookPlayer()
-    {
-        Quaternion result = transform.rotation;
-
-        Vector3 vectorToTarget = GameObject.Find("Player").transform.position - transform.position;
-        //float angle = Mathf.Atan2(vectorToTarget.x, vectorToTarget.z) * Mathf.Rad2Deg;
-
-        //result = Quaternion.AngleAxis(angle, transform.up);
-
-        //vectorToTarget.x = Mathf.Sqrt(vectorToTarget.x * vectorToTarget.x + vectorToTarget.z * vectorToTarget.z);
-
-        //angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg;
-
-        ////result.set
-
-        //result.SetLookRotation(vectorToTarget);
-
-        transform.rotation = result;
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -149,8 +134,6 @@ public class Enermy : MonoBehaviour
                 GetComponent<SphereCollider>().enabled = true;
                 GetComponent<Enermy>().enabled = true;
                 GetComponent<NavMeshAgent>().enabled = true;
-
-                //GetComponent<Cap>().size = new Vector3(0.3f, 0.16f, 0.16f);
 
                 _state = STATE_ENERMY.ALIVE;
             }
@@ -190,31 +173,27 @@ public class Enermy : MonoBehaviour
         // when player get in the attack range, 
         if (other.gameObject.tag == "Player")
         {
-            Debug.Log("인식했다!!!!");
-
+            // check attack now
             if (_state != STATE_ENERMY.ATTACK)
             {
-                Debug.Log("공격한다!!!!");
-                //other.gameObject.GetComponent<Player>().OnAttacked(damage);
-
-                //OnAttack();
                 _state = STATE_ENERMY.ATTACK;
                 StartCoroutine(Attack(other.gameObject));
             }
         }
     }
 
-    // 몬스터 공격 관련 코루틴. 애니메이션과의 연동을 위해, 애니메이션 시간을 잘 활용하자.
-    // 애니메이션 실행 시간을 조절할 수 있으면 좋을텐데...
+    /// <summary>
+    /// This Coroutine is related with Enermy Attack.
+    /// You must controll Animation time and Attack method execute time.
+    /// </summary>
+    /// <param name="obj"> Object that enermy should attack </param>
     private IEnumerator Attack(GameObject obj)
     {
-        Debug.Log("몬스터 공격");
-
         OnAnimAttack();
 
         yield return new WaitForSeconds(0.3f);
 
-        obj.GetComponent<PlayerManager>().TakeDamage(damage);
+        obj.GetComponent<PlayerManager>().TakeDamage(damage, TYPE_ATTACK.ENERMY);
 
         yield return new WaitForSeconds(1.7f);
 

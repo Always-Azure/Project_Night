@@ -2,16 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Sound Information.
+/// You can handle this like windows folder(sound folder).
+/// </summary>
+/// <author> YeHun </author>
 public class SoundInfo {
 
+    // Property
     public string Name { get { return _name; } }
     public string Path { get { return _path; } }
-    // public Dictionary<string, Sound> SoundList { get { return new Dictionary<string, Sound>(_soundList); } }
 
-    private string _name;
-    private string _path;
-    private Dictionary<string, SoundInfo> _subdirList;
-    private Dictionary<string, Sound> _soundList;
+    private string _name;   // 이름
+    private string _path;   // 경로
+    private Dictionary<string, SoundInfo> _subdirList;  // 디렉토리 리스트
+    private Dictionary<string, Sound> _soundList;   // 사운드 리스트
 
     public SoundInfo(string name, string path)
     {
@@ -21,23 +26,29 @@ public class SoundInfo {
         _soundList = new Dictionary<string, Sound>();
     }
 
-    // 서브 폴더 추가
+    /// <summary>
+    /// Add sub directory
+    /// </summary>
+    /// <param name="name"> File name </param>
+    /// <param name="fullname"> File path </param>
     public void AddDIr(string name, string fullname)
     {
-        // 중복인지 체크
+        // Check duplication
         if(_subdirList.ContainsKey(name) == true)
         {
-            // try-catch문을 사용할까...?
             Debug.LogWarning("Already data exist");
             return;
         }
 
-        // 중복이 없다면 새로 추가
         SoundInfo newinfo = new SoundInfo(name, fullname);
         _subdirList.Add(name, newinfo);
     }
-    // sound 추가.
-    // sound 객채를 받아서 추가할 것인가? 사운드 정보를 전부 받아서 내부에서 추가할 것인가????
+
+    /// <summary>
+    /// Add Sound data
+    /// </summary>
+    /// <param name="name"> File name </param>
+    /// <param name="fullname"> Sound data </param>
     public void AddSound(string name, Sound sound)
     {
         if(_soundList.ContainsKey(name) == true)
@@ -48,8 +59,13 @@ public class SoundInfo {
         _soundList.Add(name, sound);
     }
 
-    // 서브폴더리스트 업데이트
-    public void UpdateSubDir(string name, string foldername, string path)
+    /// <summary>
+    /// Update sub directory
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="newName"></param>
+    /// <param name="path"></param>
+    public void UpdateSubDir(string name, string newName, string path)
     {
         if (_subdirList.ContainsKey(name) == false)
         {
@@ -57,9 +73,14 @@ public class SoundInfo {
             return;
         }
 
-        _subdirList[name]._name = foldername;
+        _subdirList[name]._name = newName;
         _subdirList[name]._path = path;
     }
+    /// <summary>
+    /// Update Sound data
+    /// </summary>
+    /// <param name="name"></param>
+    /// <param name="sound"></param>
     public void UpdateSound(string name, Sound sound)
     {
         if(_soundList.ContainsKey(name) == false)
@@ -67,7 +88,7 @@ public class SoundInfo {
             Debug.LogWarning("There is no key : " + name);
             return;
         }
-        // 기존 sound 파일 삭제
+        // Delete origin data
         Sound temp = _soundList[name];
         temp.Dispose();
 
@@ -75,7 +96,11 @@ public class SoundInfo {
         _soundList[name] = sound;
     }
 
-    // 서브폴더 정보 반환
+    /// <summary>
+    /// Get Sub directory data
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     public SoundInfo GetSubDir(string name)
     {
         if (_subdirList.ContainsKey(name) == false)
@@ -86,7 +111,11 @@ public class SoundInfo {
 
         return _subdirList[name];
     }
-    // sound file 반환
+    /// <summary>
+    /// Get Sound data
+    /// </summary>
+    /// <param name="name"></param>
+    /// <returns></returns>
     public Sound GetSound(string name)
     {
         if (_soundList.ContainsKey(name) == false)
@@ -97,7 +126,11 @@ public class SoundInfo {
 
         return _soundList[name];
     }
-    // sound list 반환
+    /// <summary>
+    /// Get All Sound data in this directory
+    /// </summary>
+    /// <param name="audioSource"></param>
+    /// <returns></returns>
     public Dictionary<string, Sound> GetSoundList(AudioSource audioSource = null)
     {
         Dictionary<string, Sound> temp = new Dictionary<string, Sound>(_soundList);
@@ -112,8 +145,15 @@ public class SoundInfo {
         return temp;
     }
 
-    // 해당 Soundlist를 기존 Soundlist에 추가.
-    // 반환값이 있는 이유는, 많이 사용되는 strcat함수도 destination 값을 반환하기 때문에 해놨다. 없는거 보단, 있는게 혹시 모를 상황을 대비하는 거라서 일듯????
+    /// <summary>
+    /// Add soundlist in origin soundlist. Concatenate Soundlist
+    /// Why here? Because if i make this method in soundlist, i have to make new data type for concatenate method.
+    /// Making cat mathod just for concatenate is not inefficient.
+    /// So I make cat mathod here.
+    /// </summary>
+    /// <param name="destination"> origin soundlist </param>
+    /// <param name="audiosource"> Audiosource in object that this soundlist must be played </param>
+    /// <returns></returns>
     public Dictionary<string, Sound> ConcatenateSoundList(Dictionary<string, Sound> destination, AudioSource audiosource)
     {
         Dictionary<string, Sound> temp = new Dictionary<string, Sound>(_soundList);
