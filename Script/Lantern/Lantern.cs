@@ -57,8 +57,10 @@ public class Lantern : MonoBehaviour {
                 _state = STATE_LIGHT.OFF;
                 OnLight(false);
             }
-
-            UseBattery();
+            else
+            {
+                UseBattery();
+            }
         }
     }
 

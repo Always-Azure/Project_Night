@@ -40,7 +40,6 @@ public class Street_Light : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         if (_state == STATE_STREETLIGHT.BT0)
             return;
 
@@ -74,9 +73,7 @@ public class Street_Light : MonoBehaviour
 
             if (_time > 1.0f)
             {
-                Debug.Log(_battery);
-                Debug.Log(_state);
-                _battery -= 10.0f;
+                _battery -= 1.0f;
                 _time = 0;
             }
         }
