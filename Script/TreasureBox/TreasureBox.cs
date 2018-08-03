@@ -296,8 +296,6 @@ public class TreasureBox : MonoBehaviour
         // 상자에 담길 수 있는 만큼 돌리면 된다.
         for (; idx <= _itemMaxSize; idx++)
         {
-            if (idx == 3)
-                break;
             Transform loc = transform.Find("Loc" + idx).transform;
 
             for (int i = 1; i <= idx; i++)

@@ -95,8 +95,8 @@ public class Slot : MonoBehaviour, IDropHandler, IPointerClickHandler
                 //현재위치에 아이템이 있다면
                 else
                 {
-                    inv.treasureBox.RemoveItem(droppedItem.slot);
                     ItemExchangeWithItemSlot(droppedItem, BeforListSlots, AfterLocation);
+                    inv.treasureBox.RemoveItem(droppedItem.slot);
                     inv.treasureBox.InsertItem(droppedItem.item, droppedItem.slot);
                 }
             }
@@ -200,13 +200,15 @@ public class Slot : MonoBehaviour, IDropHandler, IPointerClickHandler
                 else
                 {
                     int _beforSlot = droppedItem.slot;
-                    inv.treasureBox.RemoveItem(_beforSlot);
+                    inv.treasureBox.RemoveItem(droppedItem.slot);
                     ItemExchangeWithItemSlot(droppedItem, BeforListSlots, AfterLocation);
-                    inv.treasureBox.InsertItem(BeforListItems[_beforSlot], _beforSlot);
+
+                    //Item tmp = BeforListSlots[_beforSlot].transform.GetChild(0).GetComponent<ItemData>().item;
+                    Item tmp = inv.GetTreasureBoxItems(_beforSlot);
+                    inv.treasureBox.InsertItem(tmp, _beforSlot);
+                    //inv.treasureBox.InsertItem(BeforListItems[_beforSlot], _beforSlot);
                 }
-
             }
-
         }
     }
 
